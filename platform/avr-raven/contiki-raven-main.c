@@ -529,6 +529,7 @@ extern uip_ds6_netif_t uip_ds6_if;
   }
   j = 1;
   PRINTF("\nNeighbors [%u max]\n",NBR_TABLE_MAX_NEIGHBORS);
+  j = 1;
   for(nbr = nbr_table_head(ds6_neighbors);
       nbr != NULL;
       nbr = nbr_table_next(ds6_neighbors, nbr)) {
