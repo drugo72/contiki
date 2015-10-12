@@ -549,8 +549,45 @@ rf230_is_ready_to_send() {
 	
 	return true;
 }
+/*---------------------------------------------------------------------------*/
+/*
+ * Interrupt leaves frame intact in FIFO.
+ */
+#if RF230_CONF_TIMESTAMPS
+static volatile rtimer_clock_t interrupt_time;
+static volatile int interrupt_time_set;
+#endif /* RF230_CONF_TIMESTAMPS */
+int
+rf230_interrupt(void)
+{
+  /* Poll the receive process, unless the stack thinks the radio is off */
+#if RADIOALWAYSON
+if (RF230_receive_on) {
+  DEBUGFLOW('+');
+#endif
+#if RF230_CONF_TIMESTAMPS
+  interrupt_time = timesynch_time();
+  interrupt_time_set = 1;
+#endif /* RF230_CONF_TIMESTAMPS */
 
+  process_poll(&rf230_process);
+  
+  rf230_pending = 1;
+  
+#if RADIOSTATS //TODO:This will double count buffered packets
+  RF230_receivepackets++;
+#endif
+  RIMESTATS_ADD(llrx);
 
+#if RADIOALWAYSON
+} else {
+  DEBUGFLOW('-');
+  rxframe[rxframe_head].length=0;
+}
+#endif
+  return 1;
+}
+/*---------------------------------------------------------------------------*/
 static void
 flushrx(void)
 {
@@ -1311,44 +1348,6 @@ rf230_set_pan_addr(unsigned pan,
     hal_register_write(RG_IEEE_ADDR_0, *ieee_addr);
     PRINTF("\n");
   }
-}
-/*---------------------------------------------------------------------------*/
-/*
- * Interrupt leaves frame intact in FIFO.
- */
-#if RF230_CONF_TIMESTAMPS
-static volatile rtimer_clock_t interrupt_time;
-static volatile int interrupt_time_set;
-#endif /* RF230_CONF_TIMESTAMPS */
-int
-rf230_interrupt(void)
-{
-  /* Poll the receive process, unless the stack thinks the radio is off */
-#if RADIOALWAYSON
-if (RF230_receive_on) {
-  DEBUGFLOW('+');
-#endif
-#if RF230_CONF_TIMESTAMPS
-  interrupt_time = timesynch_time();
-  interrupt_time_set = 1;
-#endif /* RF230_CONF_TIMESTAMPS */
-
-  process_poll(&rf230_process);
-  
-  rf230_pending = 1;
-  
-#if RADIOSTATS //TODO:This will double count buffered packets
-  RF230_receivepackets++;
-#endif
-  RIMESTATS_ADD(llrx);
-
-#if RADIOALWAYSON
-} else {
-  DEBUGFLOW('-');
-  rxframe[rxframe_head].length=0;
-}
-#endif
-  return 1;
 }
 /*---------------------------------------------------------------------------*/
 /* Process to handle input packets
