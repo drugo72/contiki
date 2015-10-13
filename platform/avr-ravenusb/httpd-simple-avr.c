@@ -247,7 +247,6 @@ const char BOTTOM[] PROGMEM = "</body></html>";
 static
 PT_THREAD(generate_routes(struct httpd_state *s))
 {
-  uint8_t i=0;
   PSOCK_BEGIN(&s->sout);
 
   PSOCK_GENERATOR_SEND(&s->sout, generate_string_P, (char *) TOP1);
@@ -297,7 +296,7 @@ PT_THREAD(generate_routes(struct httpd_state *s))
     blen = 0;
   }
 #else /* NETSTACK_CONF_WITH_IPV6 */
-  blen = 0;i++;
+  blen = 0;
   ADD("<h2>Hey, you got ip4 working!</h2>");
   PSOCK_GENERATOR_SEND(&s->sout, generate_string, buf);  
 #endif /* NETSTACK_CONF_WITH_IPV6 */
