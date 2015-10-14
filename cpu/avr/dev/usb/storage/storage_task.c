@@ -97,6 +97,8 @@ void usb_mass_storage_csw (void);
 
 static struct etimer et;
 
+static volatile uint8_t dummy;
+
 PROCESS(storage_process, "Storage process");
 
 /**
@@ -151,7 +153,6 @@ void usb_mass_storage_cbw (void)
 {
    bit cbw_error;
    uint8_t  c;
-   uint8_t dummy;
 
    cbw_error = FALSE;
    Usb_select_endpoint(MS_OUT_EP);           //! check if dCBWSignature is correct
