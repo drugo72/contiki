@@ -855,7 +855,7 @@ rf230_init(void)
 void rf230_warm_reset(void) {
 #if RF230_CONF_SNEEZER && JACKDAW
   /* Take jackdaw radio out of test mode */
-#warning Manipulating PORTB pins for RF230 Sneezer mode!
+#pragma message "Manipulating PORTB pins for RF230 Sneezer mode!"
   PORTB &= ~(1<<7);
   DDRB  &= ~(1<<7);
 #endif
