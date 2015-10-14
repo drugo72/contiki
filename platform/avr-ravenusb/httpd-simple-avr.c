@@ -257,7 +257,7 @@ PT_THREAD(generate_routes(struct httpd_state *s))
   ADD("<h2>Neighbors [%u max]</h2>",NBR_TABLE_CONF_MAX_NEIGHBORS);
   PSOCK_GENERATOR_SEND(&s->sout, generate_string, buf);  
   blen = 0;
-  uip_ds6_nbr_t *nbr;
+  static uip_ds6_nbr_t *nbr;
   for(nbr = nbr_table_head(ds6_neighbors);
       nbr != NULL;
       nbr = nbr_table_next(ds6_neighbors, nbr)) {
@@ -272,7 +272,7 @@ PT_THREAD(generate_routes(struct httpd_state *s))
   ADD("<h2>Routes [%u max]</h2>",UIP_DS6_ROUTE_NB);
   PSOCK_GENERATOR_SEND(&s->sout, generate_string, buf);  
   blen = 0;
-  uip_ds6_route_t *route;
+  static uip_ds6_route_t *route;
   for(route = uip_ds6_route_head();
       route != NULL;
       route = uip_ds6_route_next(route)) {
